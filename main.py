@@ -101,13 +101,21 @@ async def run_live_demo():
     console.print(json.dumps(summary, indent=2))
 
 
+from src.submission_runner import SubmissionRunner
+
+
 async def main():
     parser = argparse.ArgumentParser(description="AI WhatsApp Notification Router CLI")
     parser.add_argument("--demo", action="store_true", help="Run interactive visual CLI demo")
     parser.add_argument("--eval", action="store_true", help="Run full evaluation suite and generate Markdown report")
+    parser.add_argument("--submit", action="store_true", help="Run full pipeline and generate HackerRank output.csv submission")
+    parser.add_argument("--output", type=str, default="output.csv", help="Output CSV path for submission (default: output.csv)")
     args = parser.parse_args()
 
-    if args.eval:
+    if args.submit:
+        runner = SubmissionRunner()
+        await runner.run_submission(output_csv_path=args.output)
+    elif args.eval:
         console.print("[bold yellow]Running full evaluation benchmark suite...[/bold yellow]")
         report_data = await run_full_dataset_evaluation()
         generate_markdown_report(report_data)
@@ -118,3 +126,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
