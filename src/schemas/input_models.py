@@ -16,6 +16,10 @@ class RawMessage(BaseModel):
     image_file: Optional[str] = None
     voice_note_file: Optional[str] = None
     is_business: bool = False
+    forward_count: int = 0
+    is_forwarded: bool = False
+    mentions: List[str] = Field(default_factory=list)
+
 
 
 class UserProfile(BaseModel):

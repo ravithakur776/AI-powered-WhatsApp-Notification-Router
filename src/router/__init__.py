@@ -12,11 +12,19 @@ from src.utils.logger import logger
 from src.utils.metrics import metrics_collector
 
 
+from src.engine.decision_engine import DecisionEngine
+from src.engine.retrieval_engine import RetrievalEngine
+
+
 class NotificationRouter:
     def __init__(self, context_builder: ContextGraphBuilder):
         self.context_builder = context_builder
         self.fast_path = FastPathRouter()
-        self.deep_path = DeepPathRouter()
+        self.retrieval_engine = RetrievalEngine(
+            rag=context_builder.rag,
+            events=context_builder.loader.message_events
+        )
+        self.decision_engine = DecisionEngine(self.retrieval_engine)
         self.guardrails = OutputGuardrails()
 
     async def route_message(self, message: RawMessage) -> Tuple[RouterOutput, float, bool]:
@@ -35,13 +43,14 @@ class NotificationRouter:
             logger.info(f"Routed {message.message_id} -> {sanitized.action.upper()} via FAST PATH in {latency_ms:.2f}ms")
             return sanitized, latency_ms, True
 
-        # 3. Escalate to Deep Path LLM Reasoning
-        deep_result = await self.deep_path.route_message(ctx)
+        # 3. Escalate to 5-Layer Hybrid Decision Engine
+        deep_result = await self.decision_engine.evaluate_message(ctx)
         sanitized = self.guardrails.validate_and_sanitize(deep_result)
         latency_ms = (time.perf_counter() - start_time) * 1000
         metrics_collector.record_decision(sanitized.action, latency_ms, is_fast_path=False)
-        logger.info(f"Routed {message.message_id} -> {sanitized.action.upper()} via DEEP PATH in {latency_ms:.2f}ms")
+        logger.info(f"Routed {message.message_id} -> {sanitized.action.upper()} via HYBRID DECISION ENGINE in {latency_ms:.2f}ms")
         return sanitized, latency_ms, False
 
 
-__all__ = ["NotificationRouter", "FastPathRouter", "DeepPathRouter", "OutputGuardrails"]
+__all__ = ["NotificationRouter", "FastPathRouter", "DecisionEngine", "OutputGuardrails"]
+
