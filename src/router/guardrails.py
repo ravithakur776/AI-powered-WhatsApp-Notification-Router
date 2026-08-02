@@ -11,8 +11,10 @@ class OutputGuardrails:
         # 1. Clamp confidence score between 0.0 and 1.0
         clamped_confidence = max(0.0, min(1.0, round(output.confidence, 4)))
         
-        # 2. Ensure non-empty reason
-        reason_text = output.reason.strip() if output.reason and output.reason.strip() else "Message classified according to personalized router policies."
+        # 2. Ensure non-empty and CSV-safe sanitized reason string
+        raw_reason = output.reason.strip() if output.reason and output.reason.strip() else "Message classified according to personalized router policies."
+        reason_text = raw_reason.replace("\n", " ").replace("\r", " ").replace('"', "'").strip()
+
 
         # 3. Deduplicate evidence message IDs
         clean_evidence = list(dict.fromkeys(output.evidence_message_ids)) if output.evidence_message_ids else []

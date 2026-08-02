@@ -159,13 +159,30 @@ class RuleEngine:
             signals.triggered_rule_names.append("RULE_URGENT_KEYWORDS_FOUND")
             signals.rule_score_notify += 0.8
 
-        # Determine Suggested Action based on net score comparison
-        if signals.rule_score_mute > signals.rule_score_notify and signals.rule_score_mute >= 0.5:
+        # 10. Check User Notification Preference & Group Importance for Digest Criteria
+        pref = ctx.receiver_profile.notification_preference if ctx.receiver_profile else "balanced"
+        if pref == "strict":
+            notify_threshold = 0.70
+        elif pref == "permissive":
+            notify_threshold = 0.45
+        else:
+            notify_threshold = 0.50
+
+        # Check explicit digest conditions (low-importance group chatter or quiet hours non-urgent)
+        is_low_importance_group = ctx.group_info and ctx.group_info.importance_score < 0.45 and not signals.is_direct_mention
+        is_quiet_non_urgent = ctx.is_quiet_hours and not signals.urgent_keywords_matched and not signals.otp_genuine_signal
+
+        if is_low_importance_group or is_quiet_non_urgent:
+            signals.triggered_rule_names.append("RULE_EXPLICIT_DIGEST_CRITERIA")
+
+        # Determine Suggested Action based on calibrated score comparison & user preference
+        if signals.rule_score_mute > signals.rule_score_notify and signals.rule_score_mute >= 0.50:
             signals.suggested_action = "mute"
-        elif signals.rule_score_notify > signals.rule_score_mute and signals.rule_score_notify >= 0.5:
+        elif signals.rule_score_notify >= notify_threshold and not (is_low_importance_group or is_quiet_non_urgent):
             signals.suggested_action = "notify"
         else:
             signals.suggested_action = "digest"
+
 
         logger.debug(f"[RuleEngine] Evaluated message {msg.message_id}. Triggered {len(signals.triggered_rule_names)} rules. Action={signals.suggested_action}")
         return signals
