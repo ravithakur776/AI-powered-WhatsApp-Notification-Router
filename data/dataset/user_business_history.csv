@@ -1,0 +1,3 @@
+user_id,business_id,total_transactions,opt_in_promotions,last_interaction_timestamp
+U_101,B_501,14,False,2026-08-01T14:30:00Z
+U_101,B_502,1,True,2026-07-20T10:15:00Z

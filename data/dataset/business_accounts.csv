@@ -1,0 +1,3 @@
+business_id,business_name,category,verification_status
+B_501,SecureBank Auth Service,banking,True
+B_502,MegaDeals E-Commerce,marketing,True

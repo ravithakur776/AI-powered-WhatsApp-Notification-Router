@@ -1,0 +1,7 @@
+message_id,sender_id,receiver_id,group_id,content,timestamp,has_image,has_voice_note,image_file,voice_note_file,is_business
+M_1001,B_501,U_101,,Your 6-digit verification OTP is 894-120. Valid for 5 mins.,2026-08-02T11:00:00Z,False,False,,,True
+M_1002,U_102,U_101,,"Hey Alice, critical server memory leak in production. Please check!",2026-08-02T11:05:00Z,False,False,,,False
+M_1003,B_502,U_101,,FLASH SALE! Get 70% OFF on shoes today only! Click link to claim discount.,2026-08-02T11:10:00Z,False,False,,,True
+M_1004,U_105,U_101,,Buy cheap crypto tokens now before 100x surge!!,2026-08-02T11:15:00Z,False,False,,,False
+M_1005,U_103,U_101,G_99,Check out this funny dog meme guys haha,2026-08-02T11:20:00Z,True,False,meme.jpg,,False
+M_1006,U_102,U_101,,,2026-08-02T11:25:00Z,False,True,,audio_urgent.mp3,False

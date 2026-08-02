@@ -1,0 +1,4 @@
+group_id,group_name,category,importance_score,is_announcement_only
+G_10,DevOps Incident Response,work,0.95,False
+G_50,Weekend Football Banter,social,0.2,False
+G_99,Meme Central Spammers,social,0.05,False

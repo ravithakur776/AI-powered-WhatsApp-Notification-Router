@@ -1,0 +1,4 @@
+history_id,user_id,peer_id,message_content,user_action_taken,timestamp
+H_01,U_101,B_501,Your login OTP code is 123456,notify,2026-08-01T10:00:00Z
+H_02,U_101,B_502,Weekend mega clearance sale starts now,mute,2026-07-28T09:00:00Z
+H_03,U_101,U_105,Free gift card inside click here,mute,2026-07-25T11:00:00Z

@@ -1,0 +1,5 @@
+user_id,name,vip_contacts,muted_contacts,muted_groups,notification_preference,quiet_hours_start,quiet_hours_end
+U_101,Alice Johnson,"U_102,U_103",U_105,G_99,balanced,22:00,07:00
+U_102,Bob Smith (VIP),U_101,,,strict,23:00,06:00
+U_103,Charlie Brown,,,G_50,permissive,00:00,06:00
+U_105,Spammer Dave,,,,balanced,22:00,07:00

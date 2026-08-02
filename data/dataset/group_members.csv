@@ -1,0 +1,5 @@
+group_id,user_id,role,is_muted
+G_10,U_101,admin,False
+G_10,U_102,member,False
+G_50,U_101,member,True
+G_99,U_101,member,True
