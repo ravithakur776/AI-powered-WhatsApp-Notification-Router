@@ -1,7 +1,7 @@
 message_id,action,message_type,reason,confidence,evidence_message_ids
-M_1001,notify,security_otp,Time-sensitive authentication OTP detected. Requires immediate user notification.,0.99,none
+M_1001,notify,security_otp,Time-sensitive authentication OTP detected from valid sender. Requires immediate user notification.,0.99,none
 M_1002,notify,vip_direct_message,Message received from a designated VIP contact.,0.95,none
-M_1003,mute,muted_chat,Muted based on rule signal analysis (scam/spam/muted contact).,0.9217,H_01;H_03;H_02
+M_1003,mute,muted_chat,Muted based on rule signal analysis (scam/spam/muted contact).,0.9217,H_01;H_03
 M_1004,mute,muted_sender,Sender is explicitly listed in receiver's muted contacts list.,0.99,none
 M_1005,mute,muted_group,Group is explicitly muted by the user.,0.99,none
 M_1006,notify,vip_direct_message,Message received from a designated VIP contact.,0.95,none

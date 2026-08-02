@@ -93,9 +93,10 @@ class RetrievalEngine:
 
         # Sort descending by composite score
         scored_candidates.sort(key=lambda x: x[0], reverse=True)
-        top_candidates = scored_candidates[:top_k]
+        # Filter top evidence candidates above relevance threshold score >= 0.20
+        relevant_candidates = [c for c in scored_candidates if c[0] >= 0.20][:top_k]
 
-        evidence_ids = [c[1].history_id for c in top_candidates]
+        evidence_ids = [c[1].history_id for c in relevant_candidates]
         top_items = [
             {
                 "history_id": c[1].history_id,
@@ -103,10 +104,11 @@ class RetrievalEngine:
                 "user_action": c[1].user_action_taken,
                 "score": c[0]
             }
-            for c in top_candidates
+            for c in relevant_candidates
         ]
 
-        retrieval_conf = top_candidates[0][0] if top_candidates else 0.0
+        retrieval_conf = relevant_candidates[0][0] if relevant_candidates else 0.0
+
 
         logger.debug(f"[RetrievalEngine] Ranked {len(candidates)} items. Top evidence IDs: {evidence_ids} (conf={retrieval_conf})")
         return RetrievalResult(

@@ -76,9 +76,13 @@ class FeatureEngine:
         # 5. Quiet Hours
         fv.quiet_hours = 1.0 if ctx.is_quiet_hours else 0.0
 
-        # 6. Notification Load
-        # Standard load calculation normalized around 50 messages per day
-        fv.notification_load = 0.5
+        # 6. Notification Load (Calculated from user's daily notification load / interaction volume)
+        if ctx.recent_interaction_history:
+            recent_count = len(ctx.recent_interaction_history)
+            fv.notification_load = round(min(1.0, recent_count / 10.0), 4)
+        else:
+            fv.notification_load = 0.2
+
 
         # 7. Group Importance Score
         if ctx.group_info:

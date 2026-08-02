@@ -48,20 +48,29 @@ class ConfidenceEngine:
             rule_agreement = 0.20
 
         # 2. Retrieval Confidence Score
-        retrieval_conf = retrieval_result.retrieval_confidence if retrieval_result.ranked_evidence_ids else 0.50
+        if retrieval_result.ranked_evidence_ids:
+            retrieval_conf = retrieval_result.retrieval_confidence
+        else:
+            # Neutral confidence baseline when user has no prior history with sender
+            retrieval_conf = 0.50 if feature_vector.sender_trust == 0.5 else feature_vector.sender_trust
 
         # 3. Feature Consistency Score
         if action == "notify":
             # High urgency or high sender trust aligns with notify
             consistency = max(feature_vector.urgency_score, feature_vector.sender_trust)
-            if feature_vector.scam_score > 0.5:
-                consistency *= 0.3  # Penalty if scam score is also high
+            if feature_vector.scam_score > 0.4:
+                consistency *= 0.2  # Heavy penalty if scam score is high
+            if feature_vector.quiet_hours == 1.0 and feature_vector.urgency_score < 0.8:
+                consistency *= 0.6  # Penalty for non-urgent notifications during quiet hours
         elif action == "mute":
             # High scam, promotion, or low sender trust aligns with mute
             consistency = max(feature_vector.scam_score, feature_vector.promotion_score, 1.0 - feature_vector.sender_trust)
         else: # action == "digest"
             # Low urgency and moderate group importance aligns with digest
             consistency = 1.0 - abs(feature_vector.urgency_score - 0.2)
+            if feature_vector.quiet_hours == 1.0:
+                consistency = min(1.0, consistency + 0.2)  # Digest preferred during quiet hours
+
 
         feature_consistency = max(0.0, min(1.0, round(consistency, 4)))
 

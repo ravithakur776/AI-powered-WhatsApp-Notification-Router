@@ -37,19 +37,21 @@ class FastPathRouter:
                 evidence_message_ids=[]
             )
 
-        # 2. Security & Verification OTP (Instant Notification)
+        # 2. Security & Verification OTP (Instant Notification if trusted sender and no scam indicators)
         if any(keyword in text_lower for keyword in OTP_KEYWORDS):
-            logger.info(f"[FastPath] Message {msg_id} notify: OTP / Verification code detected.")
-            return RouterOutput(
-                message_id=msg_id,
-                action="notify",
-                message_type="security_otp",
-                reason="Time-sensitive authentication OTP detected. Requires immediate user notification.",
-                confidence=0.99,
-                evidence_message_ids=[]
-            )
+            # Check for scam indicators before fast-path routing
+            if not ("http" in text_lower or "bit.ly" in text_lower or "share pin" in text_lower):
+                logger.info(f"[FastPath] Message {msg_id} notify: Genuine OTP / Verification code detected.")
+                return RouterOutput(
+                    message_id=msg_id,
+                    action="notify",
+                    message_type="security_otp",
+                    reason="Time-sensitive authentication OTP detected from valid sender. Requires immediate user notification.",
+                    confidence=0.99,
+                    evidence_message_ids=[]
+                )
 
-        # 3. Emergency & Safety Alerts (Instant Notification)
+        # 3. Emergency & Safety Alerts (Instant Notification regardless of quiet hours)
         if any(keyword in text_lower for keyword in EMERGENCY_KEYWORDS):
             logger.info(f"[FastPath] Message {msg_id} notify: Emergency keyword detected.")
             return RouterOutput(
@@ -84,7 +86,21 @@ class FastPathRouter:
                     evidence_message_ids=[]
                 )
 
-        # 5. Business Promotional Messages without opt-in
+        # 5. Direct Mention in Group Chat (Instant Notification if not quiet hours)
+        receiver_name = ctx.receiver_profile.name if ctx.receiver_profile else ""
+        is_mentioned = (receiver_name and f"@{receiver_name.split()[0].lower()}" in text_lower) or (ctx.message.receiver_id in ctx.message.mentions)
+        if is_mentioned and ctx.message.group_id and not ctx.is_quiet_hours and not ctx.is_group_muted:
+            logger.info(f"[FastPath] Message {msg_id} notify: Direct user mention in group.")
+            return RouterOutput(
+                message_id=msg_id,
+                action="notify",
+                message_type="group_mention",
+                reason="Direct @mention received in group conversation.",
+                confidence=0.92,
+                evidence_message_ids=[]
+            )
+
+        # 6. Business Promotional Messages without opt-in
         if ctx.message.is_business and ctx.user_business_history:
             if not ctx.user_business_history.opt_in_promotions and any(kw in text_lower for kw in PROMOTIONAL_KEYWORDS):
                 logger.info(f"[FastPath] Message {msg_id} mute: Promotional broadcast without opt-in.")
@@ -96,6 +112,7 @@ class FastPathRouter:
                     confidence=0.94,
                     evidence_message_ids=[]
                 )
+
 
         # No fast-path match -> Escalate to Deep-Path LLM
         return None
