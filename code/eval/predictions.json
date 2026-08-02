@@ -1,0 +1,66 @@
+[
+  {
+    "message_id": "M_1001",
+    "action": "notify",
+    "message_type": "security_otp",
+    "reason": "Time-sensitive authentication OTP detected. Requires immediate user notification.",
+    "confidence": 0.99,
+    "evidence_message_ids": [],
+    "latency_ms": 0.6,
+    "is_fast_path": true
+  },
+  {
+    "message_id": "M_1002",
+    "action": "notify",
+    "message_type": "vip_direct_message",
+    "reason": "Message received from a designated VIP contact.",
+    "confidence": 0.95,
+    "evidence_message_ids": [],
+    "latency_ms": 0.22,
+    "is_fast_path": true
+  },
+  {
+    "message_id": "M_1003",
+    "action": "mute",
+    "message_type": "promotional_spam",
+    "reason": "Commercial marketing promotion or unsolicited broadcast.",
+    "confidence": 0.9,
+    "evidence_message_ids": [
+      "H_03",
+      "H_01",
+      "H_02"
+    ],
+    "latency_ms": 0.31,
+    "is_fast_path": false
+  },
+  {
+    "message_id": "M_1004",
+    "action": "mute",
+    "message_type": "muted_sender",
+    "reason": "Sender is explicitly listed in receiver's muted contacts list.",
+    "confidence": 0.99,
+    "evidence_message_ids": [],
+    "latency_ms": 0.44,
+    "is_fast_path": true
+  },
+  {
+    "message_id": "M_1005",
+    "action": "mute",
+    "message_type": "muted_group",
+    "reason": "Group is explicitly muted by the user.",
+    "confidence": 0.99,
+    "evidence_message_ids": [],
+    "latency_ms": 2.09,
+    "is_fast_path": true
+  },
+  {
+    "message_id": "M_1006",
+    "action": "notify",
+    "message_type": "vip_direct_message",
+    "reason": "Message received from a designated VIP contact.",
+    "confidence": 0.95,
+    "evidence_message_ids": [],
+    "latency_ms": 1.16,
+    "is_fast_path": true
+  }
+]
